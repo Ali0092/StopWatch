@@ -8,7 +8,7 @@
         android:label="StopWatch"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Practica.dark">
+        android:theme="@style/Theme.Practica.light">
         <activity
             android:name=".MainActivity"
             android:exported="true">

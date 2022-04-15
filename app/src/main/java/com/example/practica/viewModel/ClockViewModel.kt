@@ -18,41 +18,54 @@ class ClockViewModel : ViewModel() {
     val time: LiveData<String>
         get() = _time
 
-    private var handler:Handler?=null
-    private lateinit var countDownTimer: CountDownTimer
-    private var flag=false
-    var seconds:Long=0
+    private var handler: Handler? = null
+    private var flag = false
+    private var seconds : Long = 0
 
-    init {
-        _time.value = "00:00"
-    }
+    var play = false
+    var pause = false
+
+
     fun startTimer() {
-
-        handler = Handler(Looper.getMainLooper())
-        handler!!.post(object : Runnable {
-            override fun run() {
-                if(flag){
-                    handler!!.removeCallbacks(this)
-                    flag=false
+        if (!play) {
+            handler = Handler(Looper.getMainLooper())
+            handler!!.post(object : Runnable {
+                override fun run() {
+                    if (flag) {
+                        handler!!.removeCallbacks(this)
+                        flag = false
+                    } else {
+                        seconds += 100
+                        updateTime(seconds)
+                        handler!!.postDelayed(this, 100)
+                    }
                 }
-                else {
-                    seconds += 100
-                    updateTime(seconds)
-                    handler!!.postDelayed(this, 100)
-                }
-            }
-        })
+            })
+            play = true
+            pause = false
+        }
     }
 
     fun stopTimer() {
-        flag=true
+        if (!pause) {
+            flag = true
+            pause = true
+            play = false
+        }
+
+    }
+
+    fun resetTimer(){
+        seconds=0
+        updateTime(seconds)
+        stopTimer()
     }
 
     @SuppressLint("SimpleDateFormat")
     private fun updateTime(updatedTime: Long) {
         val format: DateFormat = SimpleDateFormat("mm : ss : SS")
         val displayTime: String = format.format(updatedTime)
-       _time.value=displayTime
+        _time.value = displayTime
     }
 
 }
