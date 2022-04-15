@@ -1,0 +1,14 @@
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:oneshot="false" >
+    <item android:drawable="@drawable/ic_count1" android:duration="200" />
+    <item android:drawable="@drawable/ic_count2" android:duration="200" />
+    <item android:drawable="@drawable/ic_count3" android:duration="200" />
+    <item android:drawable="@drawable/ic_count4" android:duration="200" />
+    <item android:drawable="@drawable/ic_count5" android:duration="200" />
+    <item android:drawable="@drawable/ic_count6" android:duration="200" />
+    <item android:drawable="@drawable/ic_count7" android:duration="200" />
+    <item android:drawable="@drawable/ic_count8" android:duration="200" />
+    <item android:drawable="@drawable/ic_count9" android:duration="200" />
+
+
+</animation-list>
