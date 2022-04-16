@@ -18,46 +18,14 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         clockViewModel.time.observe(this, Observer {
-            binding.time.text=it
+           binding.time.text=it
         })
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        if (savedInstanceState == null) {
-           watchFunctions()
-        }else{
-            with(savedInstanceState){
-                binding.time.text=getString("TIME")
-            }
-           watchFunctions()
-        }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.run {
-            putString("TIME",binding.time.text.toString())
-
-        }
-        super.onSaveInstanceState(outState)
-    }
-
-    private fun watchFunctions(){
-        binding.start.setOnClickListener {
-            clockViewModel.startTimer()
-            clockViewModel.time.observe(this, Observer { it ->
-                binding.time.text = it.toString()
-            })
-        }
-        binding.pause.setOnClickListener {
-            clockViewModel.stopTimer()
-        }
-
-        binding.restart.setOnClickListener {
-            clockViewModel.resetTimer()
-        }
+        binding.clockviewModel=clockViewModel
     }
 
 }

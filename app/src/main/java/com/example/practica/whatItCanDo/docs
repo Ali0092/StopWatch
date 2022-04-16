@@ -1,6 +1,10 @@
 the Practica app contains following things right now..
 
+NOTE:BackGround processing is remaining for implementation with Notification...
+
 1: res > drawable > Anim.xml
    contains a simple animation sample (testing previews of drawable vector animation)
    the resources are listed as ic_count1-count9
-2:
+2: MainActivity and ClockViewModel are for stopWatch
+   that shows the minutes seconds and milliseconds and its LifeCycleAware...
+3: Background Notification
