@@ -7,29 +7,25 @@ import android.os.Handler
 import android.os.Looper
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.*
 import com.example.practica.Constants
 import com.example.practica.R
+
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 
 
-class ClockViewModel(application: Application) : AndroidViewModel(application) {
+class ClockViewModel : ViewModel() {
 
     private val _time = MutableLiveData<String>()
     val time: LiveData<String>
         get() = _time
 
     @SuppressLint("StaticFieldLeak")
-    private val context = getApplication<Application>().applicationContext
     private var handler: Handler? = null
     private var flag = false
-    private var seconds : Long = 0
+    private var seconds: Long = 0
 
-    var notification: Notification?=null
-    var manager: NotificationManagerCompat?=null
 
     var play = false
     var pause = false
@@ -63,16 +59,6 @@ class ClockViewModel(application: Application) : AndroidViewModel(application) {
         _time.value = displayTime
     }
 
-    fun getNotification(){
-        notification = NotificationCompat.Builder(context, Constants.CHANNEL_ID)
-            .setContentTitle("StopWatch")
-            .setContentText(time.value.toString())
-            .setSmallIcon(R.drawable.circle)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .build()
-        manager = NotificationManagerCompat.from(context)
-
-    }
     fun stopTimer() {
         if (!pause) {
             flag = true
@@ -82,8 +68,8 @@ class ClockViewModel(application: Application) : AndroidViewModel(application) {
 
     }
 
-    fun resetTimer(){
-        seconds=0
+    fun resetTimer() {
+        seconds = 0
         updateTime(seconds)
         stopTimer()
     }
