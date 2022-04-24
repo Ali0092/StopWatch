@@ -1,23 +1,18 @@
 package com.example.practica.service
 
 import android.annotation.SuppressLint
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.*
 import com.example.practica.Constants.CHANNEL_ID
 import com.example.practica.Constants.NOTIFICATION_ID
-import com.example.practica.Constants.REQUEST_CODE
-import com.example.practica.MainActivity
 import com.example.practica.R
-import com.example.practica.viewModel.ClockViewModel
-import kotlinx.coroutines.launch
 
 class NotificationService : LifecycleService() {
 
+    override fun onCreate() {
+        super.onCreate()
+    }
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         val data = intent?.getStringExtra("timer_data")
@@ -41,6 +36,10 @@ class NotificationService : LifecycleService() {
         startForeground(NOTIFICATION_ID, getNotification(text).build())
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        stopSelf()
+    }
 }
 
 

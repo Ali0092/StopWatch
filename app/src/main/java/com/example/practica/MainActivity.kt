@@ -5,25 +5,14 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.getSystemService
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import com.example.practica.Constants.CHANNEL_ID
 import com.example.practica.Constants.CHANNEL_NAME
-import com.example.practica.Constants.NOTIFICATION_ID
-import com.example.practica.Constants.REQUEST_CODE
 import com.example.practica.databinding.ActivityMainBinding
 import com.example.practica.service.NotificationService
 import com.example.practica.viewModel.ClockViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
@@ -37,17 +26,16 @@ class MainActivity : AppCompatActivity() {
         createNotificationChannel()
         binding.clockviewModel = clockViewModel
 
-        clockViewModel.time.observeForever{
-            binding.time.text=it.toString()
-            startMyService(it)
-        }
-
-
+       clockViewModel.time.observe(this, Observer {
+           binding.time.text=it.toString()
+       })
     }
 
     override fun onPause() {
         super.onPause()
-
+        clockViewModel.time.observeForever{
+            startMyService(it.toString())
+        }
     }
 
     private fun createNotificationChannel() {
@@ -81,6 +69,10 @@ class MainActivity : AppCompatActivity() {
         stopMyService()
     }
 
+    override fun onStop() {
+        super.onStop()
+        stopMyService()
+    }
     override fun onDestroy() {
         super.onDestroy()
         stopMyService()
