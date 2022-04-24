@@ -1,65 +1,83 @@
 package com.example.practica.viewModel
 
-
 import android.annotation.SuppressLint
-import android.util.Log
+import android.app.Application
+import android.app.Notification
+import android.os.Handler
+import android.os.Looper
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.*
-import com.example.practica.Constants.RESETER_STR
+import com.example.practica.Constants
+import com.example.practica.R
+import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.internal.FusibleFlow
+import kotlinx.coroutines.launch
+
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 
+
 class ClockViewModel : ViewModel(), LifecycleObserver {
 
+    private val _time = MutableLiveData<String>()
+    val time: LiveData<String>
+        get() = _time
+
+    @SuppressLint("StaticFieldLeak")
+    private var handler: Handler? = null
+    private var flag = false
+    private var seconds: Long = 0
     var play = false
     var pause = false
-    var reset = false
-    var seconds = 0
+
+    fun startTimer() {
+        if (!play) {
+            handler = Handler(Looper.getMainLooper())
+            handler!!.post(object : Runnable {
+                override fun run() {
+                    if (flag) {
+                        handler!!.removeCallbacks(this)
+                        flag = false
+                    } else {
+
+                            seconds += 100
+                            updateTime(seconds)
+                            handler!!.postDelayed(this, 100)
+
+                    }
+                }
+            })
+            play = true
+            pause = false
+        }
+    }
+
 
     @SuppressLint("SimpleDateFormat")
-    val timer = flow<String> {
-            while (true) {
+    private fun updateTime(updatedTime: Long) {
+        val format: DateFormat = SimpleDateFormat("mm : ss : SS")
+        val displayTime: String = format.format(updatedTime)
+        _time.value = displayTime
+    }
 
-                delay(100L)
-                if(reset){
-                    emit(RESETER_STR)
-                    seconds=0
-                    break
-                }
-                else if(pause){
-                    break
-                }
-                else
-                seconds += 100
-                val format: DateFormat = SimpleDateFormat("mm : ss : SS")
-                val displayTime: String = format.format(seconds)
-                emit(displayTime)
-            }
-
+    fun stopTimer() {
+        if (!pause) {
+            flag = true
+            pause = true
+            play = false
+        }
 
     }
 
-     fun getPlayStatus(p: Boolean) {
-        Log.d("status..","Playing..")
-        play = true
-        pause = false
-        reset = false
+    fun resetTimer() {
+        seconds = 0
+        updateTime(seconds)
+        stopTimer()
     }
-
-     fun getPauseStatus(p: Boolean) {
-        Log.d("status..","Pausing..")
-        play = false
-        pause = true
-        reset = false
-    }
-
-     fun getResetStatus(r: Boolean) {
-        Log.d("status..","Reseting..")
-        play = false
-        pause = false
-        reset = true
-    }
-
 
 }

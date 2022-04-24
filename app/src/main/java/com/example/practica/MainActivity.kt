@@ -8,15 +8,22 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.getSystemService
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.example.practica.Constants.CHANNEL_ID
 import com.example.practica.Constants.CHANNEL_NAME
+import com.example.practica.Constants.NOTIFICATION_ID
+import com.example.practica.Constants.REQUEST_CODE
 import com.example.practica.databinding.ActivityMainBinding
 import com.example.practica.service.NotificationService
 import com.example.practica.viewModel.ClockViewModel
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,40 +37,19 @@ class MainActivity : AppCompatActivity() {
         createNotificationChannel()
         binding.clockviewModel = clockViewModel
 
-
-        binding.start.setOnClickListener {
-            clockViewModel.getPlayStatus(true)
-            lifecycleScope.launch {
-                clockViewModel.timer.collect {
-                    binding.time.text = it.toString()
-                }
-            }
+        clockViewModel.time.observeForever{
+            binding.time.text=it.toString()
+            startMyService(it)
         }
 
-        binding.pause.setOnClickListener {
-            clockViewModel.getPauseStatus(true)
-        }
-
-        binding.restart.setOnClickListener {
-            clockViewModel.getResetStatus(true)
-        }
 
     }
 
     override fun onPause() {
         super.onPause()
-        startMyService()
-    }
-    override fun onRestart() {
-        super.onRestart()
-        clockViewModel.getResetStatus(true)
-        stopMyService()
+
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        stopMyService()
-    }
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
             CHANNEL_ID,
@@ -78,14 +64,25 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun startMyService() {
+
+    private fun startMyService(time:String) {
         val serviceIntent = Intent(this, NotificationService::class.java)
+        serviceIntent.putExtra("timer_data",time)
         startForegroundService(serviceIntent)
     }
 
-    private fun stopMyService() {
+   private fun stopMyService() {
         val serviceIntent = Intent(this, NotificationService::class.java)
-        stopService(serviceIntent)
+       stopService(serviceIntent)
     }
 
+    override fun onRestart() {
+        super.onRestart()
+        stopMyService()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        stopMyService()
+    }
 }
